@@ -7,7 +7,17 @@ import { FormGroup, FormControl } from '@angular/forms';
     <form [formGroup]="form">
       <div *ngFor="let prop of personProps">
         <label>{{ prop.label }}:</label>
-        <input [type]="prop.type" [formControlName]="prop.key">
+
+        <div [ngSwitch]="prop.type">
+          <input *ngSwitchCase="'text'" [type]="prop.type" [formControlName]="prop.key">
+          <input *ngSwitchCase="'number'" [type]="prop.type" [formControlName]="prop.key">
+
+          <select *ngSwitchCase="'select'" [formControlName]="prop.key">
+            <option *ngFor="let option of prop.options" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
       </div>
     </form>
     <pre>{{ form.value | json }}</pre>
@@ -27,7 +37,8 @@ export class DynamicFormComponent implements OnInit {
       this.personProps.push({
         key: prop,
         label: this.formDataObj[prop].label,
-        type: this.formDataObj[prop].type
+        type: this.formDataObj[prop].type,
+        options: this.formDataObj[prop].options
       });
     }
 
