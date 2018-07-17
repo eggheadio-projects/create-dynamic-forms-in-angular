@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
@@ -6,7 +6,8 @@ import { FormGroup, FormControl } from '@angular/forms';
   template: `
     <form [formGroup]="form">
       <div *ngFor="let prop of personProps">
-        <input type="text" [formControlName]="prop">
+        <label>{{ prop.label }}:</label>
+        <input [type]="prop.type" [formControlName]="prop.key">
       </div>
     </form>
     <pre>{{ form.value | json }}</pre>
@@ -15,19 +16,19 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class DynamicFormComponent implements OnInit {
   form: FormGroup;
-  person = {
-    firstname: 'Juri',
-    age: 32,
-    surname: 'Strumpflohner',
-    twitter: '@juristr'
-  };
+  @Input() formDataObj;
   personProps = [];
 
   ngOnInit() {
     const formDataObj = {};
-    for (const prop of Object.keys(this.person)) {
-      formDataObj[prop] = new FormControl(this.person[prop]);
-      this.personProps.push(prop);
+    for (const prop of Object.keys(this.formDataObj)) {
+      formDataObj[prop] = new FormControl(this.formDataObj[prop].value);
+
+      this.personProps.push({
+        key: prop,
+        label: this.formDataObj[prop].label,
+        type: this.formDataObj[prop].type
+      });
     }
 
     this.form = new FormGroup(formDataObj);
