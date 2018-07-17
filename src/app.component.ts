@@ -1,46 +1,60 @@
+import { Validators } from '@angular/forms';
 import { Component } from '@angular/core';
+import { FormlyFieldConfig } from '@ngx-formly/core';
 
 @Component({
   selector: 'app-root',
   template: `
     <h1>Dynamic reactive forms in Angular</h1>
-    <app-dynamic-form [formDataObj]="person"></app-dynamic-form>
+    <app-dynamic-form [data]="person" [formDataObj]="personFields"></app-dynamic-form>
   `
 })
 export class AppComponent {
   person = {
-    firstname: {
-      label: 'Firstname',
-      value: 'Juri',
-      type: 'text',
-      validators: {
-        required: true
-      }
-    },
-    age: {
-      label: 'Age',
-      value: 32,
-      type: 'number',
-      validators: {
-        min: 18
-      }
-    },
-    gender: {
-      label: 'Gender',
-      value: 'F',
-      type: 'radio',
-      options: [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }]
-    },
-    city: {
-      label: 'City',
-      value: 'LA',
-      type: 'select',
-      options: [
-        { label: '(choose one)', value: '' },
-        { label: 'New York', value: 'NY' },
-        { label: 'Los Angeles', value: 'LA' },
-        { label: 'Salt Lake City', value: 'SLC' }
-      ]
-    }
+    firstname: 'Juri',
+    age: 32,
+    gender: 'M'
   };
+
+  personFields = <FormlyFieldConfig>[
+    {
+      key: 'firstname',
+      type: 'input',
+      templateOptions: {
+        label: 'Firstname'
+      },
+      validators: {
+        validation: Validators.required
+      },
+      validation: {
+        messages: {
+          required: 'You need to provide a value'
+        }
+      }
+    },
+    {
+      key: 'age',
+      type: 'input',
+      templateOptions: {
+        label: 'Age',
+        type: 'number'
+      },
+      validators: {
+        validation: Validators.min(18)
+      },
+      validation: {
+        messages: {
+          min: 'You need to specify a value greater or equal to 18'
+        }
+      }
+    },
+    {
+      key: 'gender',
+      type: 'radio',
+      templateOptions: {
+        label: 'Gender',
+        options: [{ value: 'Male', key: 'M' }, { value: 'Female', key: 'F' }]
+      }
+    }
+  ];
 }
