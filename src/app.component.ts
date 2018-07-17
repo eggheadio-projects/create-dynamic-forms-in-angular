@@ -19,6 +19,12 @@ export class AppComponent {
       value: 32,
       type: 'number'
     },
+    gender: {
+      label: 'Gender',
+      value: 'F',
+      type: 'radio',
+      options: [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }]
+    },
     city: {
       label: 'City',
       value: 'LA',

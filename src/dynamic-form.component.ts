@@ -12,6 +12,17 @@ import { FormGroup, FormControl } from '@angular/forms';
           <input *ngSwitchCase="'text'" [type]="prop.type" [formControlName]="prop.key">
           <input *ngSwitchCase="'number'" [type]="prop.type" [formControlName]="prop.key">
 
+          <div *ngSwitchCase="'radio'">
+            <label *ngFor="let option of prop.options">
+              <input type="radio"
+                [name]="prop.key"
+                [formControlName]="prop.key"
+                [value]="option.value">
+
+              {{ option.label }}
+            </label>
+          </div>
+
           <select *ngSwitchCase="'select'" [formControlName]="prop.key">
             <option *ngFor="let option of prop.options" [value]="option.value">
               {{ option.label }}
