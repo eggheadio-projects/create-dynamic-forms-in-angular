@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -29,11 +29,27 @@ import { FormGroup, FormControl } from '@angular/forms';
             </option>
           </select>
         </div>
+
+        <div class="error" *ngIf="form.get(prop.key).invalid && (form.get(prop.key).dirty || form.get(prop.key).touched)">
+          <div *ngIf="form.get(prop.key).errors.required">
+            You have to provide a value.
+          </div>
+          <div *ngIf="form.get(prop.key).errors.min">
+            You have to provide a value greater or equal to {{ form.get(prop.key).errors.min.min }}
+          </div>
+        </div>
+
       </div>
     </form>
     <pre>{{ form.value | json }}</pre>
   `,
-  styles: []
+  styles: [
+    `
+    .error {
+      color: red;
+    }
+  `
+  ]
 })
 export class DynamicFormComponent implements OnInit {
   form: FormGroup;
@@ -43,7 +59,10 @@ export class DynamicFormComponent implements OnInit {
   ngOnInit() {
     const formDataObj = {};
     for (const prop of Object.keys(this.formDataObj)) {
-      formDataObj[prop] = new FormControl(this.formDataObj[prop].value);
+      formDataObj[prop] = new FormControl(
+        this.formDataObj[prop].value,
+        this.mapValidator(this.formDataObj[prop].validators)
+      );
 
       this.personProps.push({
         key: prop,
@@ -54,5 +73,19 @@ export class DynamicFormComponent implements OnInit {
     }
 
     this.form = new FormGroup(formDataObj);
+  }
+
+  mapValidator(validators) {
+    if (validators) {
+      return Object.keys(validators).map(validationType => {
+        if (validationType === 'required') {
+          return Validators.required;
+        } else if (validationType === 'min') {
+          return Validators.min(validators[validationType]);
+        }
+      });
+    } else {
+      return [];
+    }
   }
 }
